@@ -20,9 +20,8 @@ router.post(
         //console.log(user)
   
         const newPost = new Post({
-          text: req.body.text,
           
-          descreption:req.body.descreption
+          ...req.body
         });
 
         const post = await newPost.save();
@@ -70,44 +69,14 @@ router.delete('/:id',isAuth(),async (req, res) => {
     if (!post) {
       return res.status(404).json({ msg: 'Post not found' });
     }
-
-    // Check user
-    if (post.user.toString() !== req.user.id) {
-      return res.status(401).json({ msg: 'User not authorized' });
-    }
-
     await post.remove();
-
     res.json({ msg: 'Post removed' });
   } catch (err) {
     console.error(err.message);
-
     res.status(500).send('Server Error');
   }
 });
-//update  a post
-router.patch ('/:id',isAuth(),async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-
-    if (!post) {
-      return res.status(404).json({ msg: 'Post not found' });
-    }
-
-    // Check user
-    if (post.user.toString() !== req.user.id) {
-      return res.status(401).json({ msg: 'User not authorized' });
-    }
-
-    await post.remove();
-
-    res.json({ msg: 'Post removed' });
-  } catch (err) {
-    console.error(err.message);
-
-    res.status(500).send('Server Error');
-  }
-});
+//
 //like
 router.put('/like/:id', isAuth(), async (req, res) => {
   try {

@@ -28,6 +28,7 @@ const Form = ({ currentId, setCurrentId }) => {
       clear();
     } else {
       dispatch(updatePost(currentId, postData));
+      console.log(currentId)
       clear();
     }
   };
@@ -36,11 +37,11 @@ const Form = ({ currentId, setCurrentId }) => {
     <Paper className={classes.paper}>
       <form autoComplete="off" noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
         <Typography variant="h6">{currentId ? `Editing "${post.title}"` : 'add a post '}</Typography>
-        <TextField name="owner" variant="outlined" label="Creator" fullWidth value={postData.creator} onChange={(e) => setPostData({ ...postData, creator: e.target.value })} />
-        <TextField name="city" variant="outlined" label="Title" fullWidth value={postData.title} onChange={(e) => setPostData({ ...postData, title: e.target.value })} />
-        <TextField name="description" variant="outlined" label="Message" fullWidth multiline rows={4} value={postData.message} onChange={(e) => setPostData({ ...postData, message: e.target.value })} />
-        <TextField name="moreDetails" variant="outlined" label="Tags (coma separated)" fullWidth value={postData.tags} onChange={(e) => setPostData({ ...postData, tags: e.target.value.split(',') })} />
-        <div className={classes.fileInput}><FileBase type="file" multiple={false} onDone={({ base64 }) => setPostData({ ...postData, selectedFile: base64 })} /></div>
+        <TextField name="owner" variant="outlined" label="owner" fullWidth value={postData.owner} onChange={(e) => setPostData({ ...postData, owner: e.target.value })} />
+        <TextField name="city" variant="outlined" label="city" fullWidth value={postData.city} onChange={(e) => setPostData({ ...postData, city: e.target.value })} />
+        <TextField name="description" variant="outlined" label="descreption" fullWidth multiline rows={4} value={postData.descreption} onChange={(e) => setPostData({ ...postData, descreption: e.target.value })} />
+        <TextField name="moreDetails" variant="outlined" label="moreDetails " fullWidth value={postData.moreDetails} onChange={(e) => setPostData({ ...postData, moreDetails: e.target.value.split(',') })} />
+        <div className={classes.fileInput}><FileBase type="file" multiple={false} onDone={({ base64 }) => setPostData({ ...postData, addPictures: base64 })} /></div>
         <Button className={classes.buttonSubmit} variant="contained" color="primary" size="large" type="submit" fullWidth>Submit</Button>
         <Button variant="contained" color="secondary" size="small" onClick={clear} fullWidth>Clear</Button>
       </form>

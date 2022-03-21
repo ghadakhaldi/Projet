@@ -1,66 +1,132 @@
 import React from 'react';
-import { Card, CardActions, CardContent, CardMedia, Button, Typography } from '@material-ui/core/';
+import { makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
+import Card from '@material-ui/core/Card';
+import {Button }from '@material-ui/core'
+
+import CardHeader from '@material-ui/core/CardHeader';
+import CardMedia from '@material-ui/core/CardMedia';
+import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
+import Collapse from '@material-ui/core/Collapse';
+import Avatar from '@material-ui/core/Avatar';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import { red } from '@material-ui/core/colors';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import ShareIcon from '@material-ui/icons/Share';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { useDispatch } from 'react-redux';
+import { likePost,deletePost } from '../../../actions/posts';
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import DeleteIcon from '@material-ui/icons/Delete';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import ThumbUpAltOutlined from '@material-ui/icons/ThumbUpAltOutlined';
-import { useDispatch } from 'react-redux';
-import moment from 'moment';
 
-import { likePost, deletePost } from '../../../actions/posts';
-import useStyles from './styles';
+const useStyles = makeStyles((theme) => ({
+  root: {
+    maxWidth: 345,
+  },
+  media: {
+    height: 0,
+    paddingTop: '56.25%', // 16:9
+  },
+  expand: {
+    transform: 'rotate(0deg)',
+    marginLeft: 'auto',
+    transition: theme.transitions.create('transform', {
+      duration: theme.transitions.duration.shortest,
+    }),
+  },
+  expandOpen: {
+    transform: 'rotate(180deg)',
+  },
+  avatar: {
+    backgroundColor: red[500],
+  },
+}));
+ const Post = ({ post, setCurrentId }) => {
 
-const Post = ({ post, setCurrentId }) => {
-  const dispatch = useDispatch();
   const classes = useStyles();
-  const user = JSON.parse(localStorage.getItem('profile'));
+  const [expanded, setExpanded] = React.useState(false);
 
-  const Likes = () => {
-    if (post.likes.length > 0) {
-      return post.likes.find((like) => like === (user?.result?.googleId || user?.result?._id))
-        ? (
-          <><ThumbUpAltIcon fontSize="small" />&nbsp;{post.likes.length > 2 ? `You and ${post.likes.length - 1} others` : `${post.likes.length} like${post.likes.length > 1 ? 's' : ''}` }</>
-        ) : (
-          <><ThumbUpAltOutlined fontSize="small" />&nbsp;{post.likes.length} {post.likes.length === 1 ? 'Like' : 'Likes'}</>
-        );
-    }
-
-    return <><ThumbUpAltOutlined fontSize="small" />&nbsp;Like</>;
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
   };
-
+  const dispatch=useDispatch();
+  const handleLike= () => {
+    dispatch(likePost(post._id));
+  };
+  const handleDelete= () => {
+    dispatch(deletePost(post._id));
+  };
   return (
-    <Card className={classes.card}>
-      <CardMedia className={classes.media} image={post.selectedFile || 'https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png'} title={post.title} />
-      <div className={classes.overlay}>
-        <Typography variant="h6">{post.name}</Typography>
-        <Typography variant="body2">{moment(post.createdAt).fromNow()}</Typography>
-      </div>
-      {(user?.result?.googleId === post?.creator || user?.result?._id === post?.creator) && (
-      <div className={classes.overlay2}>
-        <Button onClick={() => setCurrentId(post._id)} style={{ color: 'white' }} size="small">
-          <MoreHorizIcon fontSize="default" />
-        </Button>
-      </div>
-      )}
-      <div className={classes.details}>
-        <Typography variant="body2" color="textSecondary" component="h2">{post.descreption.map((descreption) => `#${descreption} `)}</Typography>
-      </div>
-      <Typography className={classes.title} gutterBottom variant="h5" component="h2">{post.city}</Typography>
+    <Card className={classes.root}>
+      <CardHeader
+        avatar={
+          <Avatar aria-label="recipe" className={classes.avatar}>
+            R
+          </Avatar>
+        }
+        action={
+          <IconButton aria-label="settings" onClick={handleDelete}>
+            <MoreVertIcon />
+          </IconButton>
+        }
+        title=""
+        subheader={post.createdAt}
+      />
+      
       <CardContent>
-        <Typography variant="body2" color="textSecondary" component="p">{post.moreDetails}</Typography>
+        <Typography variant="body2" color="textSecondary" component="p">
+
+
+          {post.owner}
+<br/>
+          {post.city}
+          <br/>
+    {post.addPictures}
+    <br/>
+{post.descreption}
+
+
+
+      </Typography>
+       
       </CardContent>
-      <CardActions className={classes.cardActions}>
-        <Button size="small" color="primary" disabled={!user?.result} onClick={() => dispatch(likePost(post._id))}>
-          <Likes />
-        </Button>
-        {(user?.result?.googleId === post?.owner || user?.result?._id === post?.owner) && (
-        <Button size="small" color="secondary" onClick={() => dispatch(deletePost(post._id))}>
-          <DeleteIcon fontSize="small" /> Delete
-        </Button>
-        )}
+      <CardActions disableSpacing>
+        <Button size="small" color="primary" onClick={() => dispatch(deletePost(post._id))}><DeleteIcon fontSize="small" /> Delete</Button>
+      
+        <IconButton aria-label="add to favorites"
+        onClick={handleLike}
+        >
+          <FavoriteIcon />
+        </IconButton>
+        <IconButton aria-label="share">
+          <ShareIcon />
+        </IconButton>
+        <IconButton
+          className={clsx(classes.expand, {
+            [classes.expandOpen]: expanded,
+          })}
+          onClick={handleExpandClick}
+          aria-expanded={expanded}
+          aria-label="show more"
+        >
+          <ExpandMoreIcon />
+        </IconButton>
       </CardActions>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <CardContent>
+          <Typography paragraph>more Details:</Typography>
+          {post.moreDetails.map(el=> <Typography paragraph>
+{
+  el
+}     
+     </Typography>
+         )}
+        </CardContent>
+      </Collapse>
     </Card>
   );
-};
-
+}
 export default Post;

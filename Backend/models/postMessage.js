@@ -4,7 +4,7 @@ const postSchema = mongoose.Schema({
 
     owner: String,
     city: String,
-    descreption: String,
+    descreption:String,
     moreDetails: [String],
     addPictures: String,
     likeCount: {

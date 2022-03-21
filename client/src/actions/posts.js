@@ -45,7 +45,11 @@ export const likePost = (id) => async (dispatch) => {
 
 export const deletePost = (id) => async (dispatch) => {
   try {
-    await await api.deletePost(id);
+    const profile= localStorage.getItem('profile');
+    console.log(JSON.parse(profile).token)
+    const options={headers:{Authorization:`Bearer ${JSON.parse(profile).token}`}}
+    console.log(options)
+    await api.deletePost(id,options);
 
     dispatch({ type: DELETE, payload: id });
   } catch (error) {
